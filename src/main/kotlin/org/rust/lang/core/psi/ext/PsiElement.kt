@@ -16,6 +16,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.PsiUtilCore
 import org.rust.lang.core.psi.RsFile
 import org.rust.lang.core.stubs.RsFileStub
+import org.rust.lang.refactoring.isValidRustVariableIdentifier
 
 val PsiElement.ancestors: Sequence<PsiElement> get() = generateSequence(this) {
     if (it is PsiFile) null else it.parent
@@ -116,6 +117,7 @@ val PsiElement.endOffsetInParent: Int
     get() = startOffsetInParent + textLength
 
 fun String.unescapeIdentifier(): String = removePrefix("r#")
+fun String.escapeIdentifierIfNeeded(): String = if (isValidRustVariableIdentifier(this)) this else "r#$this"
 
 val PsiElement.unescapedText: String get() {
     val text = text ?: return ""
