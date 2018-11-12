@@ -220,6 +220,18 @@ abstract class RsNamingInspectionTest(inspection: RsNamingInspection) : RsInspec
                 fun_foo();
             }
         """)
+
+        fun `test function with raw identifier`() = checkFixByText("Rename to `extern`", """
+            fn <warning descr="Function `Extern` should have a snake case name such as `extern`">r#Extern/*caret*/</warning>() {}
+            fn main() {
+                r#Extern();
+            }
+        """, """
+            fn r#extern() {}
+            fn main() {
+                r#extern();
+            }
+        """)
     }
 
     class RsArgumentNamingInspectionTest: RsNamingInspectionTest(RsArgumentNamingInspection()) {
@@ -319,6 +331,14 @@ abstract class RsNamingInspectionTest(inspection: RsNamingInspection) : RsInspec
         fun testMacrosFix() = checkFixByText("Rename to `macro_foo`", """
             macro_rules! <warning descr="Macro `MacroFoo` should have a snake case name such as `macro_foo`">Macro<caret>Foo</warning> { () => {}; }
             MacroFoo!();
+        """, """
+            macro_rules! macro_foo { () => {}; }
+            macro_foo!();
+        """)
+
+        fun `test macros with raw identifier`() = checkFixByText("Rename to `macro_foo`", """
+            macro_rules! <warning descr="Macro `MacroFoo` should have a snake case name such as `macro_foo`">r#Macro/*caret*/Foo</warning> { () => {}; }
+            r#MacroFoo!();
         """, """
             macro_rules! macro_foo { () => {}; }
             macro_foo!();
@@ -474,6 +494,18 @@ abstract class RsNamingInspectionTest(inspection: RsNamingInspection) : RsInspec
             struct StructFoo {}
             fn struct_use() {
                 let a = StructFoo {};
+            }
+        """)
+
+        fun `test struct with raw identifier`() = checkFixByText("Rename to `FooBar`", """
+            struct <warning descr="Type `foo_bar` should have a camel case name such as `FooBar`">r#foo_bar/*caret*/</warning>;
+            fn main() {
+                let a = foo_bar;
+            }
+        """, """
+            struct FooBar;
+            fn main() {
+                let a = FooBar;
             }
         """)
     }
