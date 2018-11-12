@@ -18,6 +18,7 @@ import org.rust.lang.core.psi.*
 import org.rust.lang.core.psi.ext.*
 import org.rust.lang.core.types.ty.TyUnknown
 import org.rust.lang.core.types.type
+import org.rust.lang.refactoring.isValidRustVariableIdentifier
 
 const val KEYWORD_PRIORITY = 10.0
 private const val ENUM_VARIANT_PRIORITY = 4.0
@@ -97,6 +98,9 @@ private fun getFieldsOwnerTailText(owner: RsFieldsOwner) = when {
 
 private fun getInsertHandler(element: RsElement, scopeName: String, context: InsertionContext) {
     val curUseItem = context.getElementOfType<RsUseItem>()
+    if (element is RsNameIdentifierOwner && !isValidRustVariableIdentifier(scopeName) && scopeName !in CAN_NOT_BE_ESCAPED) {
+        context.document.insertString(context.startOffset, RS_RAW_PREFIX)
+    }
     when (element) {
 
         is RsMod -> {
