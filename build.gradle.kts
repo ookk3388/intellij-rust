@@ -112,6 +112,10 @@ allprojects {
                 }
             }
         }
+
+        tasks.withType<Test>().configureEach {
+            systemProperty("jna.nosys", "true")
+        }
     }
 }
 
